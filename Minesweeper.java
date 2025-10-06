@@ -25,6 +25,7 @@ public class Minesweeper {
     JPanel boardPanel = new JPanel();
 
     Mine[][] board = new Mine[row][col];
+    ArrayList<Mine> mineList; //Array for generating the mines;
 
     Minesweeper() {
         frame.setVisible(true);
@@ -54,11 +55,85 @@ public class Minesweeper {
                 tile.setFocusable(false);
                 tile.setMargin(new Insets(0, 0, 0, 0));
                 tile.setFont(new Font("Arial Unicode MS", Font.PLAIN, 45));
-                tile.setText("1");
+                //tile.setText("💣");
+                tile.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {   //if the tile is clicked
+                        Mine tile = (Mine) e.getSource();
+
+                        if(e.getButton() == MouseEvent.BUTTON1) {  // left click,put flag
+                            if(tile.getText() == "") {
+                                if(mineList.contains(tile)) {
+                                   revealMines(); 
+                                }
+                                else {
+                                    checkMine(tile.r, tile.c); // check how many mines are nearby;
+                                }
+                            }
+                        }
+                    }
+                });
                 boardPanel.add(tile);
                 //here we have the 8x8 grid with 64 clickable buttons;
             }
         }
+        //frame.setVisible(true); daca nu scoate toate tile urile;
 
+        setMines();
+
+    }
+    void setMines() {       //place the mines
+        mineList = new ArrayList<Mine>();
+        mineList.add(board[2][2]);
+        mineList.add(board[2][3]);
+        mineList.add(board[5][6]);
+        mineList.add(board[3][4]);
+        mineList.add(board[1][1]);
+        
+
+    }
+    void revealMines() {   //go through the ArrayList and the the tiles with mines to the bomb emoji;
+        for(int i=0;i<mineList.size();i++) {
+            Mine tile = mineList.get(i);
+            tile.setText("💣");
+        }
+    }
+
+    void checkMine(int r, int c) {
+        Mine tile = board[r][c];
+        tile.setEnabled(false);
+        int minesFound = 0;
+        minesFound = minesFound+countMine(r-1, c-1); // neighbour top left;
+        minesFound = minesFound+countMine(r-1, c);   // neighbour top;
+        minesFound = minesFound+countMine(r-1, c+1); // neighbour top right;
+        minesFound = minesFound+countMine(r, c-1);   // neighbour same row but to the left;
+        minesFound = minesFound+countMine(r, c+1);   // neighbour same row but to the right;
+        minesFound = minesFound+countMine(r+1, c-1); // neighbour bottom left;
+        minesFound = minesFound+countMine(r+1, c);   // neighbour bottom under;
+        minesFound = minesFound+countMine(r+1, c+1); // neighbour bottom right;
+
+        if(minesFound>0) {
+            tile.setText(Integer.toString(minesFound));                                        //dcccccccccc
+        }
+        else {
+            tile.setText("");
+            checkMine(r-1, c-1);  // check for mines top left;
+            checkMine(r-1, c);    // check for mines top ;
+            checkMine(r-1, c+1);  // check for mines top right;
+            checkMine(r, c-1);    // check for mines same row to the left;
+            checkMine(r, c+1);    // check for mines same row to the right;
+            checkMine(r+1, c-1);  // check for mines bottom left;
+            checkMine(r+1, c);    // check for mines bottom;
+            checkMine(r-1, c+1);  // check for mines bottom right;
+        }
+    }
+    int countMine(int r, int c) {
+        if(r<0 || r>=row || c<0 || c>=col) {   //if the neighbour is out of bounds return 0;
+            return 0;
+        }
+        if(mineList.contains(board[r][c])) { //if the neighbour has a bomb return 1;
+            return 1;
+        }
+        return 0; // if the neighbour doesnt have a bomb return 0;
     }
 }
