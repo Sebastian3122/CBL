@@ -61,7 +61,7 @@ public class Minesweeper {
                     public void mousePressed(MouseEvent e) {   //if the tile is clicked
                         Mine tile = (Mine) e.getSource();
 
-                        if(e.getButton() == MouseEvent.BUTTON1) {  // left click,put flag
+                        if(e.getButton() == MouseEvent.BUTTON1) {  // left click, to reveal tile;
                             if(tile.getText() == "") {
                                 if(mineList.contains(tile)) {
                                    revealMines(); 
@@ -69,6 +69,15 @@ public class Minesweeper {
                                 else {
                                     checkMine(tile.r, tile.c); // check how many mines are nearby;
                                 }
+                            }
+                        }
+                        if(e.getButton() == MouseEvent.BUTTON3) { // right click on a flag to eliminate the flag;
+                            if(tile.getText() == "🚩") {
+                                tile.setText("");
+                            }
+                                else if(tile.getText() == "") {
+                                    tile.setText("🚩");
+                                
                             }
                         }
                     }
@@ -137,3 +146,4 @@ public class Minesweeper {
         return 0; // if the neighbour doesnt have a bomb return 0;
     }
 }
+
