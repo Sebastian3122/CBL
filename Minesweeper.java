@@ -14,6 +14,8 @@ public class Minesweeper {
         this.c = c;
       }  
     }
+    boolean go=false;         //game over
+    int clicked=0;      // to remember how many tiles we clicked on
     int nrf=5;         //variable to see how many flags we have left;
     int tileSize = 70;// size of a tile;
     int row = 8;      //number of rows;
@@ -73,6 +75,9 @@ public class Minesweeper {
                 tile.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) {   //if the tile is clicked
+                        if(go) {
+                            return; //if the game is over u cant click anymore;
+                        }
                         Mine tile = (Mine) e.getSource();
 
                         if(e.getButton() == MouseEvent.BUTTON1) {  // left click, to reveal tile;
@@ -90,7 +95,7 @@ public class Minesweeper {
                                 tile.setText("");
                                 nrf++;
                             }
-                                else if(tile.getText() == "" && nrf!=0) {   // right click on an empty tile to put a flag;
+                                else if(tile.getText() == "" && nrf!=0 && tile.isEnabled()) {   // right click on an empty tile to put a flag;
                                     tile.setText("🚩");
                                     nrf--;
                             }
@@ -121,6 +126,8 @@ public class Minesweeper {
             tile.setText("💣");
             frame.add(textPanel2, BorderLayout.NORTH);
             textPanel.setVisible(false);
+            go=true;
+
         }
     }
 
