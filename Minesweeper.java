@@ -10,7 +10,7 @@ public class Minesweeper {
         // the properties of the JButton ,but we add the row and col number;
         int r; // row
         int c; // col
-
+        int pulamea = 800;
         public Mine(int r, int c) {
             this.r = r;
             this.c = c;
@@ -123,6 +123,7 @@ public class Minesweeper {
         mineList.add(board[3][4]);
         mineList.add(board[1][1]);
 
+        
     }
 
     void revealMines() { // go through the ArrayList and the the tiles with mines to the bomb emoji;
