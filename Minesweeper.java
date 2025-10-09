@@ -3,7 +3,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
-
+//check
 public class Minesweeper {
 
     private class Mine extends JButton { // make another class with
