@@ -141,6 +141,7 @@ public class Minesweeper {
             return;
         }
         tile.setEnabled(false);
+        clicked=clicked+1;
         int minesFound = 0;
         minesFound = minesFound+countMine(r-1, c-1); // neighbour top left;
         minesFound = minesFound+countMine(r-1, c);   // neighbour top;
@@ -164,6 +165,11 @@ public class Minesweeper {
             checkMine(r+1, c-1);  // check for mines bottom left;
             checkMine(r+1, c);    // check for mines bottom;
             checkMine(r-1, c+1);  // check for mines bottom right;
+        }
+        if(clicked == row*col-mineList.size()) {
+            go=true;
+            textLabel.setText("You WIN!");
+            textLabel.setHorizontalAlignment(JLabel.CENTER); 
         }
     }
     int countMine(int r, int c) {
