@@ -31,15 +31,17 @@ public class Minesweeper {
     JPanel textPanel = new JPanel();
     JPanel flagCounter = new JPanel();
     JPanel boardPanel = new JPanel();
-    JLabel textLabel2 = new JLabel(); // for You Lost;
-    JPanel textPanel2 = new JPanel(); // for You Lost;
-    JLabel textLabel3 = new JLabel(); // for You WIN;
-    JPanel textPanel3 = new JPanel(); // for You WIN;
+    boolean[][] mineStorage = new boolean[row][col];
 
     Mine[][] board = new Mine[row][col];
     ArrayList<Mine> mineList; // Array for generating the mines;
 
     Minesweeper() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                mineStorage[i][j] = false;
+            }
+        } // Array that will be used for putting bombs.
         frame.setVisible(true);
         frame.setSize(width, height);
         frame.setLocationRelativeTo(null); // open the game at the center of the screen;
@@ -54,8 +56,6 @@ public class Minesweeper {
 
         textPanel.setLayout(new BorderLayout());
         textPanel.add(textLabel);
-        textPanel2.add(textLabel2);
-        textPanel3.add(textLabel3);
         frame.add(textPanel, BorderLayout.NORTH);
         // add "Minesweeper" title to the window and center it at the top;
 
@@ -114,15 +114,27 @@ public class Minesweeper {
 
     void setMines() { // place the mines
         mineList = new ArrayList<Mine>();
-        mineList.add(board[2][2]);
-        mineList.add(board[2][3]);
-        mineList.add(board[5][6]);
-        mineList.add(board[3][4]);
-        mineList.add(board[1][1]);
+        Random random = new Random();
+        // mineList.add(board[2][2]);
+        // mineList.add(board[2][3]);
+        // mineList.add(board[5][6]);
+        // mineList.add(board[3][4]);
+        // mineList.add(board[1][1]);
+        for (int i = 0; i < 15; i++) {
+            int row = random.nextInt(8);
+            int col = random.nextInt(8);
+            if (!mineStorage[row][col]) {
+                mineList.add(board[row][col]);
+                mineStorage[row][col] = true;
+            } else {
+                i--;
+            }
+        }
 
     }
 
-    void revealMines() { // go through the ArrayList and the the tiles with mines to the bomb emoji;
+    void revealMines() {
+        // go through the ArrayList and the the tiles with mines to the bomb emoji;
         for (int i = 0; i < mineList.size(); i++) {
             Mine tile = mineList.get(i);
             tile.setText("💣");
