@@ -21,7 +21,7 @@ public class Minesweeper {
     boolean go = false; // game over
     int clicked = 0; // to remember how many tiles we clicked on
     int nrf = 10; // variable to see how many flags we have left;
-    int tileSize = 70;// size of a tile;
+    int tileSize = 70; // size of a tile;
     int row = 8; // number of rows;
     int col = 8; // number of columns;
     int width = col * tileSize; // the width of the board;
@@ -115,17 +115,12 @@ public class Minesweeper {
     void setMines() { // place the mines
         mineList = new ArrayList<Mine>();
         Random random = new Random();
-        // mineList.add(board[2][2]);
-        // mineList.add(board[2][3]);
-        // mineList.add(board[5][6]);
-        // mineList.add(board[3][4]);
-        // mineList.add(board[1][1]);
         for (int i = 0; i < 10; i++) {
-            int row = random.nextInt(8);
-            int col = random.nextInt(8);
-            if (!mineStorage[row][col]) {
-                mineList.add(board[row][col]);
-                mineStorage[row][col] = true;
+            int r = random.nextInt(row);
+            int c = random.nextInt(col);
+            if (!mineStorage[r][c]) {
+                mineList.add(board[r][c]);
+                mineStorage[r][c] = true;
             } else {
                 i--;
             }
@@ -179,11 +174,7 @@ public class Minesweeper {
             checkMine(r + 1, c); // check for mines bottom;
             checkMine(r + 1, c + 1); // check for mines bottom right;
         }
-        if (clicked == row * col - mineList.size()) {
-            go = true;
-            textLabel.setText("You WIN!");
-            textLabel.setHorizontalAlignment(JLabel.CENTER);
-        }
+
         if (clicked == row * col - mineList.size()) {
             go = true;
             textLabel.setText("You WIN!");
