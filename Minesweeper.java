@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public class Minesweeper {
 
-    private class Mine extends JButton { 
+    private class Mine extends JButton {
         // make another class with the properties of the JButton ,but we add the row
         // and col number;
         int r; // row
@@ -47,22 +47,16 @@ public class Minesweeper {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // if exit close the program;
         frame.setLayout(new BorderLayout());
         // here we have a white screen centered in the middle;
-        textLabel2.setFont(new Font("Arial", Font.BOLD, 25)); // set the font for lose
-        textLabel3.setFont(new Font("Arial", Font.BOLD, 25)); // set the font for win
         textLabel.setFont(new Font("Arial", Font.BOLD, 25)); // set the font
         textLabel.setHorizontalAlignment(JLabel.LEFT);
-        textLabel2.setHorizontalAlignment(JLabel.CENTER);
-        textLabel3.setHorizontalAlignment(JLabel.CENTER);
         textLabel.setText(" Flags:" + nrf + "              Minesweeper");
-        textLabel2.setText("You Lose, Try again!");
-        textLabel3.setText("YOU WIN");
         textLabel.setOpaque(true);
 
         textPanel.setLayout(new BorderLayout());
         textPanel.add(textLabel);
         textPanel2.add(textLabel2);
         textPanel3.add(textLabel3);
-        frame.add(textPanel, BorderLayout.NORTH); 
+        frame.add(textPanel, BorderLayout.NORTH);
         // add "Minesweeper" title to the window and center it at the top;
 
         boardPanel.setLayout(new GridLayout(row, col)); // make 8x8 grid
@@ -94,13 +88,13 @@ public class Minesweeper {
                                 }
                             }
                         }
-                        if (e.getButton() == MouseEvent.BUTTON3) { 
+                        if (e.getButton() == MouseEvent.BUTTON3) {
                             // right click on a flag to remove the flag;
                             if (tile.getText() == "🚩") {
                                 tile.setText("");
                                 nrf++;
                                 textLabel.setText(" Flags:" + nrf + "              Minesweeper");
-                            } else if (tile.getText() == "" && nrf != 0) { 
+                            } else if (tile.getText() == "" && nrf != 0) {
                                 // right click on an empty tile to put a flag;
                                 tile.setText("🚩");
                                 nrf--;
@@ -113,7 +107,7 @@ public class Minesweeper {
                 // here we have the 8x8 grid with 64 clickable buttons;
             }
         }
-        frame.setVisible(true);// daca nu scoate toate tile urile;
+        frame.setVisible(true); // daca nu scoate toate tile urile;
 
         setMines();
     }
@@ -172,6 +166,11 @@ public class Minesweeper {
             checkMine(r + 1, c - 1); // check for mines bottom left;
             checkMine(r + 1, c); // check for mines bottom;
             checkMine(r - 1, c + 1); // check for mines bottom right;
+        }
+        if (clicked == row * col - mineList.size()) {
+            go = true;
+            textLabel.setText("You WIN!");
+            textLabel.setHorizontalAlignment(JLabel.CENTER);
         }
         if (clicked == row * col - mineList.size()) {
             go = true;
