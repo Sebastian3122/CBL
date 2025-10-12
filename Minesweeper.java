@@ -6,22 +6,24 @@ import javax.swing.*;
 
 public class Minesweeper {
 
-    private class Mine extends JButton { // make another class with
-        // the properties of the JButton ,but we add the row and col number;
+    private class Mine extends JButton { 
+        // make another class with the properties of the JButton ,but we add the row
+        // and col number;
         int r; // row
         int c; // col
-        int pulamea = 800;
+
         public Mine(int r, int c) {
             this.r = r;
             this.c = c;
         }
     }
 
+    boolean go = false; // game over
+    int clicked = 0; // to remember how many tiles we clicked on
     int nrf = 5; // variable to see how many flags we have left;
-    int tileSize = 70; // size of a tile;
+    int tileSize = 70;// size of a tile;
     int row = 8; // number of rows;
     int col = 8; // number of columns;
-    int cnt = col * row;
     int width = col * tileSize; // the width of the board;
     int height = row * tileSize; // the height of the board;
     JFrame frame = new JFrame("Minesweeper");
@@ -60,8 +62,8 @@ public class Minesweeper {
         textPanel.add(textLabel);
         textPanel2.add(textLabel2);
         textPanel3.add(textLabel3);
-        frame.add(textPanel, BorderLayout.NORTH); // add "Minesweeper" title to
-        // the window and center it at the top;
+        frame.add(textPanel, BorderLayout.NORTH); 
+        // add "Minesweeper" title to the window and center it at the top;
 
         boardPanel.setLayout(new GridLayout(row, col)); // make 8x8 grid
         boardPanel.setBackground(Color.green); // make the game background green;
@@ -78,6 +80,9 @@ public class Minesweeper {
                 tile.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) { // if the tile is clicked
+                        if (go) {
+                            return; // if the game is over u cant click anymore;
+                        }
                         Mine tile = (Mine) e.getSource();
 
                         if (e.getButton() == MouseEvent.BUTTON1) { // left click, to reveal tile;
@@ -86,19 +91,17 @@ public class Minesweeper {
                                     revealMines();
                                 } else {
                                     checkMine(tile.r, tile.c); // check how many mines are nearby;
-                                    cnt--;
                                 }
                             }
                         }
-                        if (e.getButton() == MouseEvent.BUTTON3) { // right click on a flag
-                            // to remove the flag;
+                        if (e.getButton() == MouseEvent.BUTTON3) { 
+                            // right click on a flag to remove the flag;
                             if (tile.getText() == "🚩") {
                                 tile.setText("");
                                 nrf++;
                                 textLabel.setText(" Flags:" + nrf + "              Minesweeper");
-
-                            } else if (tile.getText() == "" && nrf != 0) { // right click on an
-                                // empty tile to put a flag;
+                            } else if (tile.getText() == "" && nrf != 0) { 
+                                // right click on an empty tile to put a flag;
                                 tile.setText("🚩");
                                 nrf--;
                                 textLabel.setText(" Flags:" + nrf + "              Minesweeper");
@@ -110,7 +113,7 @@ public class Minesweeper {
                 // here we have the 8x8 grid with 64 clickable buttons;
             }
         }
-        // frame.setVisible(true); daca nu scoate toate tile urile;
+        frame.setVisible(true);// daca nu scoate toate tile urile;
 
         setMines();
     }
@@ -123,21 +126,30 @@ public class Minesweeper {
         mineList.add(board[3][4]);
         mineList.add(board[1][1]);
 
-        
     }
 
     void revealMines() { // go through the ArrayList and the the tiles with mines to the bomb emoji;
         for (int i = 0; i < mineList.size(); i++) {
             Mine tile = mineList.get(i);
             tile.setText("💣");
-            frame.add(textPanel2, BorderLayout.NORTH);
-            textPanel.setVisible(false);
+            textLabel.setText("You Lose! Try again!");
+            textLabel.setHorizontalAlignment(JLabel.CENTER);
+            go = true;
+
         }
     }
 
     void checkMine(int r, int c) {
+
+        if (r < 0 || r >= row || c < 0 || c >= col) { // if its out of bound,exit ;
+            return;
+        }
         Mine tile = board[r][c];
+        if (!tile.isEnabled()) { // if tile is clicked on;
+            return;
+        }
         tile.setEnabled(false);
+        clicked = clicked + 1;
         int minesFound = 0;
         minesFound = minesFound + countMine(r - 1, c - 1); // neighbour top left;
         minesFound = minesFound + countMine(r - 1, c); // neighbour top;
@@ -160,6 +172,11 @@ public class Minesweeper {
             checkMine(r + 1, c - 1); // check for mines bottom left;
             checkMine(r + 1, c); // check for mines bottom;
             checkMine(r - 1, c + 1); // check for mines bottom right;
+        }
+        if (clicked == row * col - mineList.size()) {
+            go = true;
+            textLabel.setText("You WIN!");
+            textLabel.setHorizontalAlignment(JLabel.CENTER);
         }
     }
 
