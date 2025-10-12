@@ -20,7 +20,7 @@ public class Minesweeper {
 
     boolean go = false; // game over
     int clicked = 0; // to remember how many tiles we clicked on
-    int nrf = 5; // variable to see how many flags we have left;
+    int nrf = 10; // variable to see how many flags we have left;
     int tileSize = 70;// size of a tile;
     int row = 8; // number of rows;
     int col = 8; // number of columns;
@@ -120,7 +120,7 @@ public class Minesweeper {
         // mineList.add(board[5][6]);
         // mineList.add(board[3][4]);
         // mineList.add(board[1][1]);
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             int row = random.nextInt(8);
             int col = random.nextInt(8);
             if (!mineStorage[row][col]) {
@@ -177,7 +177,7 @@ public class Minesweeper {
             checkMine(r, c + 1); // check for mines same row to the right;
             checkMine(r + 1, c - 1); // check for mines bottom left;
             checkMine(r + 1, c); // check for mines bottom;
-            checkMine(r - 1, c + 1); // check for mines bottom right;
+            checkMine(r + 1, c + 1); // check for mines bottom right;
         }
         if (clicked == row * col - mineList.size()) {
             go = true;
