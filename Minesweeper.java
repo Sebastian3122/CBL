@@ -19,6 +19,7 @@ public class Minesweeper {
     }
 
     boolean go = false; // game over
+    boolean started = false;
     int clicked = 0; // to remember how many tiles we clicked on
     int nrf = 10; // variable to see how many flags we have left;
     int tileSize = 70; // size of a tile;
@@ -26,12 +27,18 @@ public class Minesweeper {
     int col = 8; // number of columns;
     int width = col * tileSize; // the width of the board;
     int height = row * tileSize; // the height of the board;
+    int elapsedTime = 0;
+    int seconds = 0;
+    int minutes = 0;
     JFrame frame = new JFrame("Minesweeper");
     JLabel textLabel = new JLabel();
     JPanel textPanel = new JPanel();
     JPanel flagCounter = new JPanel();
     JPanel boardPanel = new JPanel();
     boolean[][] mineStorage = new boolean[row][col];
+
+    String secondsString = String.format("%02d", seconds);
+    String minutesString = String.format("%02d", minutes);
 
     Mine[][] board = new Mine[row][col];
     ArrayList<Mine> mineList; // Array for generating the mines;
@@ -51,7 +58,7 @@ public class Minesweeper {
         // here we have a white screen centered in the middle;
         textLabel.setFont(new Font("Arial", Font.BOLD, 25)); // set the font
         textLabel.setHorizontalAlignment(JLabel.LEFT);
-        textLabel.setText(" Flags:" + nrf + "              Minesweeper");
+        textLabel.setText(" Flags:" + nrf + "               Time: " + minutesString + ":" + secondsString);
         textLabel.setOpaque(true);
 
         textPanel.setLayout(new BorderLayout());
