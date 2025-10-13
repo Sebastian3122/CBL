@@ -18,13 +18,14 @@ public class Minesweeper {
         }
     }
 
+    Timer timer;
     boolean go = false; // game over
     boolean started = false;
     int clicked = 0; // to remember how many tiles we clicked on
-    int nrf = 10; // variable to see how many flags we have left;
+    int nrf = 25; // variable to see how many flags we have left;
     int tileSize = 70; // size of a tile;
-    int row = 8; // number of rows;
-    int col = 8; // number of columns;
+    int row = 12; // number of rows;
+    int col = 12; // number of columns;
     int width = col * tileSize; // the width of the board;
     int height = row * tileSize; // the height of the board;
     int elapsedTime = 0;
@@ -58,7 +59,10 @@ public class Minesweeper {
         // here we have a white screen centered in the middle;
         textLabel.setFont(new Font("Arial", Font.BOLD, 25)); // set the font
         textLabel.setHorizontalAlignment(JLabel.LEFT);
-        textLabel.setText(" Flags:" + nrf + "               Time: " + minutesString + ":" + secondsString);
+        textLabel.setText(" Flags:" + nrf
+                + "                                 Time: "
+                + minutesString + ":"
+                + secondsString);
         textLabel.setOpaque(true);
 
         textPanel.setLayout(new BorderLayout());
@@ -84,6 +88,23 @@ public class Minesweeper {
                         if (go) {
                             return; // if the game is over u cant click anymore;
                         }
+                        if (!started) {
+                            started = true;
+                            timer = new Timer(1000, new ActionListener() {
+                                public void actionPerformed(ActionEvent e) {
+                                    elapsedTime = elapsedTime + 1000;
+                                    minutes = (elapsedTime / 60000) % 60;
+                                    seconds = (elapsedTime / 1000) % 60;
+                                    secondsString = String.format("%02d", seconds);
+                                    minutesString = String.format("%02d", minutes);
+                                    textLabel.setText(" Flags:" + nrf +
+                                            "                                 Time: "
+                                            + minutesString + ":"
+                                            + secondsString);
+                                }
+                            });
+                            timer.start();
+                        }
                         Mine tile = (Mine) e.getSource();
 
                         if (e.getButton() == MouseEvent.BUTTON1) { // left click, to reveal tile;
@@ -100,12 +121,17 @@ public class Minesweeper {
                             if (tile.getText() == "🚩") {
                                 tile.setText("");
                                 nrf++;
-                                textLabel.setText(" Flags:" + nrf + "              Minesweeper");
+                                textLabel.setText(" Flags:" + nrf
+                                        + "               Time: " + minutesString + ":"
+                                        + secondsString);
                             } else if (tile.getText() == "" && nrf != 0) {
                                 // right click on an empty tile to put a flag;
                                 tile.setText("🚩");
                                 nrf--;
-                                textLabel.setText(" Flags:" + nrf + "              Minesweeper");
+                                textLabel.setText(" Flags:" + nrf
+                                        + "                                 Time: "
+                                        + minutesString + ":"
+                                        + secondsString);
                             }
                         }
                     }
@@ -122,7 +148,7 @@ public class Minesweeper {
     void setMines() { // place the mines
         mineList = new ArrayList<Mine>();
         Random random = new Random();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 25; i++) {
             int r = random.nextInt(row);
             int c = random.nextInt(col);
             if (!mineStorage[r][c]) {
@@ -140,10 +166,14 @@ public class Minesweeper {
         for (int i = 0; i < mineList.size(); i++) {
             Mine tile = mineList.get(i);
             tile.setText("💣");
-            textLabel.setText("You Lose! Try again!");
-            textLabel.setHorizontalAlignment(JLabel.CENTER);
+            textLabel.setText("Time: " + minutesString
+                    + ":" + secondsString + "                      You Lost! Try again!");
+            textLabel.setHorizontalAlignment(JLabel.LEFT);
             go = true;
-
+            // stop stopwatch
+            if (timer != null) {
+                timer.stop();
+            }
         }
     }
 
@@ -184,8 +214,12 @@ public class Minesweeper {
 
         if (clicked == row * col - mineList.size()) {
             go = true;
-            textLabel.setText("You WIN!");
-            textLabel.setHorizontalAlignment(JLabel.CENTER);
+            textLabel.setText("Time: " + minutesString
+                    + ":" + secondsString + "          You Won!");
+            textLabel.setHorizontalAlignment(JLabel.LEFT);
+            if (timer != null) {
+                timer.stop();
+            }
         }
     }
 
