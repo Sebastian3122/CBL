@@ -3,6 +3,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
+import javax.swing.border.Border;
 
 public class Minesweeper {
 
@@ -31,8 +32,11 @@ public class Minesweeper {
     int elapsedTime = 0;
     int seconds = 0;
     int minutes = 0;
+    int personalBest = Integer.MAX_VALUE;
+
     JFrame frame = new JFrame("Minesweeper");
     JLabel textLabel = new JLabel();
+    JButton restartButton = new JButton("Restart");
     JPanel textPanel = new JPanel();
     JPanel flagCounter = new JPanel();
     JPanel boardPanel = new JPanel();
@@ -45,11 +49,17 @@ public class Minesweeper {
     ArrayList<Mine> mineList; // Array for generating the mines;
 
     Minesweeper() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                mineStorage[i][j] = false;
-            }
-        } // Array that will be used for putting bombs.
+        makeFrame();
+        makeBoard();
+        setMines();
+        // for (int i = 0; i < 8; i++) {
+        // for (int j = 0; j < 8; j++) {
+        // mineStorage[i][j] = false;
+        // }
+        // } // Array that will be used for putting bombs.
+    }
+
+    void makeFrame() {
         frame.setVisible(true);
         frame.setSize(width, height);
         frame.setLocationRelativeTo(null); // open the game at the center of the screen;
@@ -65,14 +75,43 @@ public class Minesweeper {
                 + secondsString);
         textLabel.setOpaque(true);
 
+        restartButton.setFocusable(false);
+        restartButton.setFont(new Font("Arial", Font.PLAIN, 18));
+        restartButton.addActionListener(e -> restartGame());
+
         textPanel.setLayout(new BorderLayout());
-        textPanel.add(textLabel);
+        textPanel.add(textLabel, BorderLayout.CENTER);
+        textPanel.add(restartButton, BorderLayout.EAST);
         frame.add(textPanel, BorderLayout.NORTH);
         // add "Minesweeper" title to the window and center it at the top;
 
         boardPanel.setLayout(new GridLayout(row, col)); // make 8x8 grid
         boardPanel.setBackground(Color.green); // make the game background green;
         frame.add(boardPanel);
+    }
+
+    void makeBoard() {
+        boardPanel.removeAll();
+        mineStorage = new boolean[row][col];
+        board = new Mine[row][col];
+        go = false;
+        started = false;
+        clicked = 0;
+        nrf = 25;
+        elapsedTime = 0;
+        minutes = 0;
+        seconds = 0;
+        secondsString = String.format("%02d", seconds);
+        minutesString = String.format("%02d", minutes);
+
+        if (timer != null) {
+            timer.stop();
+        }
+
+        textLabel.setText(" Flags:" + nrf
+                + "                                 Time: "
+                + minutesString + ":"
+                + secondsString);
 
         for (int r = 0; r < row; r++) {
             for (int c = 0; c < col; c++) {
@@ -81,7 +120,8 @@ public class Minesweeper {
                 tile.setFocusable(false);
                 tile.setMargin(new Insets(0, 0, 0, 0));
                 tile.setFont(new Font("Arial Unicode MS", Font.PLAIN, 45));
-                // tile.setText("💣");
+                tile.setEnabled(true);
+                tile.setText("");
                 tile.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) { // if the tile is clicked
@@ -90,25 +130,12 @@ public class Minesweeper {
                         }
                         if (!started) {
                             started = true;
-                            timer = new Timer(1000, new ActionListener() {
-                                public void actionPerformed(ActionEvent e) {
-                                    elapsedTime = elapsedTime + 1000;
-                                    minutes = (elapsedTime / 60000) % 60;
-                                    seconds = (elapsedTime / 1000) % 60;
-                                    secondsString = String.format("%02d", seconds);
-                                    minutesString = String.format("%02d", minutes);
-                                    textLabel.setText(" Flags:" + nrf +
-                                            "                                 Time: "
-                                            + minutesString + ":"
-                                            + secondsString);
-                                }
-                            });
-                            timer.start();
+                            startTimer();
                         }
                         Mine tile = (Mine) e.getSource();
 
                         if (e.getButton() == MouseEvent.BUTTON1) { // left click, to reveal tile;
-                            if (tile.getText() == "") {
+                            if (tile.getText().equals("")) {
                                 if (mineList.contains(tile)) {
                                     revealMines();
                                 } else {
@@ -118,21 +145,18 @@ public class Minesweeper {
                         }
                         if (e.getButton() == MouseEvent.BUTTON3) {
                             // right click on a flag to remove the flag;
-                            if (tile.getText() == "🚩") {
+                            if (tile.getText().equals("🚩")) {
                                 tile.setText("");
                                 nrf++;
                                 textLabel.setText(" Flags:" + nrf
                                         + "               Time: " + minutesString + ":"
                                         + secondsString);
-                            } else if (tile.getText() == "" && nrf != 0) {
+                            } else if (tile.getText().equals("") && nrf != 0) {
                                 // right click on an empty tile to put a flag;
                                 tile.setText("🚩");
                                 nrf--;
-                                textLabel.setText(" Flags:" + nrf
-                                        + "                                 Time: "
-                                        + minutesString + ":"
-                                        + secondsString);
                             }
+                            updateLabel();
                         }
                     }
                 });
@@ -140,9 +164,36 @@ public class Minesweeper {
                 // here we have the 8x8 grid with 64 clickable buttons;
             }
         }
-        frame.setVisible(true); // daca nu scoate toate tile urile;
+        boardPanel.revalidate();
+        boardPanel.repaint();
+    }
 
-        setMines();
+    void startTimer() {
+        timer = new Timer(1000, e -> {
+            elapsedTime += 1000;
+            minutes = (elapsedTime / 60000) % 60;
+            seconds = (elapsedTime / 1000) % 60;
+            secondsString = String.format("%02d", seconds);
+            minutesString = String.format("%02d", minutes);
+            updateLabel();
+        });
+        timer.start();
+    }
+
+    void updateLabel() {
+        String bestTime;
+        if (personalBest == Integer.MAX_VALUE) {
+            bestTime = "--:--";
+        } else {
+            int bestMinutes = personalBest / 60;
+            int bestSeconds = personalBest % 60;
+            bestTime = String.format("%02d:%02d", bestMinutes, bestSeconds);
+        }
+
+        textLabel.setText(" Flags:" + nrf
+                + "                                 Time: "
+                + minutesString + ":" + secondsString
+                + "        Best: " + bestTime);
     }
 
     void setMines() { // place the mines
@@ -170,6 +221,7 @@ public class Minesweeper {
                     + ":" + secondsString + "                      You Lost! Try again!");
             textLabel.setHorizontalAlignment(JLabel.LEFT);
             go = true;
+            // stop stopwatch
             if (timer != null) {
                 timer.stop();
             }
@@ -213,12 +265,18 @@ public class Minesweeper {
 
         if (clicked == row * col - mineList.size()) {
             go = true;
-            textLabel.setText("Time: " + minutesString
-                    + ":" + secondsString + "          You Won!");
-            textLabel.setHorizontalAlignment(JLabel.LEFT);
             if (timer != null) {
                 timer.stop();
             }
+
+            int currentTimeSeconds = elapsedTime / 1000;
+            if (currentTimeSeconds < personalBest) {
+                personalBest = currentTimeSeconds;
+            }
+
+            textLabel.setText("Time: " + minutesString
+                    + ":" + secondsString + "          You Won!   Best: "
+                    + String.format("%02d:%02d", personalBest / 60, personalBest % 60));
         }
     }
 
@@ -230,6 +288,14 @@ public class Minesweeper {
             return 1;
         }
         return 0; // if the neighbour doesnt have a bomb return 0;
+    }
+
+    void restartGame() {
+        if (timer != null) {
+            timer.stop();
+        }
+        makeBoard();
+        setMines();
     }
 
     public static void main(String[] args) {
