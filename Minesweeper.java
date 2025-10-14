@@ -170,7 +170,6 @@ public class Minesweeper {
                     + ":" + secondsString + "                      You Lost! Try again!");
             textLabel.setHorizontalAlignment(JLabel.LEFT);
             go = true;
-            // stop stopwatch
             if (timer != null) {
                 timer.stop();
             }
