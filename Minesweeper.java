@@ -151,7 +151,7 @@ public class Minesweeper {
                                 textLabel.setText(" Flags:" + nrf
                                         + "               Time: " + minutesString + ":"
                                         + secondsString);
-                            } else if (tile.getText().equals("") && nrf != 0) {
+                            } else if (tile.getText().equals("") && nrf != 0 && tile.isEnabled()) {
                                 // right click on an empty tile to put a flag;
                                 tile.setText("🚩");
                                 nrf--;
@@ -275,7 +275,7 @@ public class Minesweeper {
             }
 
             textLabel.setText("Time: " + minutesString
-                    + ":" + secondsString + "          You Won!   Best: "
+                    + ":" + secondsString + "                 You Won!   Best: "
                     + String.format("%02d:%02d", personalBest / 60, personalBest % 60));
         }
     }
