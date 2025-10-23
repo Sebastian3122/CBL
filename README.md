@@ -1,16 +1,22 @@
 # CBL
               Minesweeper
-1.Version control.
-//2.Game Design.(easy,medium,hard levels || Balance, fairness, and difficulty curve)
-3.User Experience(Layouts, color schemes || Consistent feedback (sound, animation, effects))
-.................................................................................................
-1.render a grid of buttons(mines and numbers)
-2.when left clicked the button shows either the mine or the number of mines in the proximity of it)
-3.create flags when the right click is pressed that mark an existing mine.(numbers of flags = number of mines)
-4.if a flag is on a tile, tile cannot be left clicked.
-5.create a stopwatch to keep track of your best performance.
-6.implement sound when either left or right button is clicked(if left clicked on a mine button a specified sound is played)
-7.implement a victory/lose label.
-8.implement a method to randomize grid.
-9.whem a mine is clicked all mines are showed.
+# CBL
+This is Minesweeper made by implementing Java Swing. The player has to click on the safe tiles and avoid the mines.
+
+There are no future requirements to run the game. To run it, just press the run button.
+
+For the gameplay instructions:
+    - Reveal a tile by left-clicking.
+    - Place or remove a flag by right-clicking.
+    - If the player manages to reveal all of the safe tiles, they win.
+    - If at any point during the game, if the player clicks on a mine, they lose the game.
+
+Features:
+    - Timer: Test to see if it starts when running the game and if it stops when losing/winning the game.
+    - Victory: Test to see if "You win" message appears after revealing all of the safe tiles. 
+    - Defeat: Test to see if "You lose! Try again!" message appears after clicking on a mine. 
+    - Grid: Test to see if after every run of the game, the grid of bombs randomizes.
+    - Restart button: Check to see if by pressing the restart button, the grid randomizes and the timer resets to 00:00.
+    - Flags: Test to see if by pressing right-click, a flag places on the tile. Also check to see if every time a flag is placed, the flag counter decreseases by 1, and if every time a flag is removed, the flag counter increases by 1.
+    - Record keeping: Test to see if, If the player wins and the time is less then the previous best time, the "best time" counter has been updated to the new best time.
 
